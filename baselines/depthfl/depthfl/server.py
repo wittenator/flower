@@ -59,7 +59,7 @@ def gen_evaluate_fn(
         """Use the entire CIFAR-100 test set for evaluation."""
         net = instantiate(model)
         params_dict = zip(net.state_dict().keys(), parameters_ndarrays)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         net.load_state_dict(state_dict, strict=True)
         net.to(device)
 
@@ -130,7 +130,7 @@ def gen_evaluate_fn_hetero(
             param_idx_lst.append(param_idx)
 
         params_dict = zip(net_tmp.state_dict().keys(), parameters_ndarrays)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
 
         for net, param_idx in zip(nets, param_idx_lst):
             net.load_state_dict(prune(state_dict, param_idx), strict=False)

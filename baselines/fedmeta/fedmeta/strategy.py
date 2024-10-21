@@ -65,7 +65,7 @@ def fedmeta_update_meta_sgd(
         These are updated alpha.
     """
     params_dict = zip(net.state_dict().keys(), weights_results)
-    state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+    state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
     net.load_state_dict(state_dict, strict=True)
     optimizer = torch.optim.Adam(
         list(net.parameters()) + list(alpha), lr=beta, weight_decay=weight_decay
@@ -108,7 +108,7 @@ def fedmeta_update_maml(
         These are updated parameters.
     """
     params_dict = zip(net.state_dict().keys(), weights_results)
-    state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+    state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
     net.load_state_dict(state_dict, strict=True)
     optimizer = torch.optim.Adam(
         list(net.parameters()), lr=beta, weight_decay=weight_decay

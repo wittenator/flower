@@ -28,7 +28,7 @@ class FlowerClient(fl.client.NumPyClient):
         """Receive parameters and apply them to the local model."""
         params_dict = zip(self.model.state_dict().keys(), parameters)
 
-        state_dict = OrderedDict({k: torch.Tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
 
         self.model.load_state_dict(state_dict, strict=True)
 

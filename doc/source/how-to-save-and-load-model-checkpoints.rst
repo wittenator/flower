@@ -87,7 +87,7 @@ returns a ``Parameters`` object that has to be transformed into a list of NumPy
 
                 # Convert `List[np.ndarray]` to PyTorch`state_dict`
                 params_dict = zip(net.state_dict().keys(), aggregated_ndarrays)
-                state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+                state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
                 net.load_state_dict(state_dict, strict=True)
 
                 # Save the model

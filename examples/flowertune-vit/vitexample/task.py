@@ -42,7 +42,7 @@ def set_params(model, parameters):
     """Apply the parameters to model head."""
     finetune_layers = model.heads
     params_dict = zip(finetune_layers.state_dict().keys(), parameters)
-    state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+    state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
     finetune_layers.load_state_dict(state_dict, strict=True)
 
 

@@ -51,7 +51,7 @@ class FlowerClient(fl.client.NumPyClient):
         layer if available.
         """
         params_dict = zip(self.model.state_dict().keys(), parameters)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         self.model.load_state_dict(state_dict, strict=True)
 
     def fit(
@@ -161,7 +161,7 @@ class FedBNFlowerClient(FlowerClient):
         """
         keys = [k for k in self.model.state_dict().keys() if "bn" not in k]
         params_dict = zip(keys, parameters)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         self.model.load_state_dict(state_dict, strict=False)
 
         # Now also load from bn_state_dir

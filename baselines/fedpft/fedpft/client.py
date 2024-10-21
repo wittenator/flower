@@ -65,7 +65,7 @@ class FedPFTClient(fl.client.NumPyClient):
     def set_parameters(self, parameters: NDArrays) -> None:
         """Set the parameters of the `classifier_head`."""
         params_dict = zip(self.classifier_head.state_dict().keys(), parameters)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         self.classifier_head.load_state_dict(state_dict, strict=True)
 
     def fit(

@@ -190,7 +190,7 @@ class AggregateFullStrategy(ServerInitializationStrategy):
             if k.startswith("_body") or k.startswith("_head")
         ]
         params_dict = zip(model_keys, parameters)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         self.model.set_parameters(state_dict)
 
         if self.save_path is not None:
@@ -386,7 +386,7 @@ class AggregateBodyStrategy(ServerInitializationStrategy):
             k for k in self.model.state_dict().keys() if k.startswith("_body")
         ]
         params_dict = zip(model_keys, parameters)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         self.model.set_parameters(state_dict)
 
         if self.save_path is not None:

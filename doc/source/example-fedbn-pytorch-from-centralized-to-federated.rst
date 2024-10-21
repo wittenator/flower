@@ -94,7 +94,7 @@ model parameter list when sending to or receiving from the server.
             # Set model parameters from a list of NumPy ndarrays
             keys = [k for k in self.model.state_dict().keys() if "bn" not in k]
             params_dict = zip(keys, parameters)
-            state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+            state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
             self.model.load_state_dict(state_dict, strict=False)
 
         ...

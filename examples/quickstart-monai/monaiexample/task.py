@@ -36,7 +36,7 @@ def get_params(model):
 def set_params(model, ndarrays):
     """Apply parameters to a model."""
     params_dict = zip(model.state_dict().keys(), ndarrays)
-    state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+    state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
     model.load_state_dict(state_dict, strict=True)
 
 

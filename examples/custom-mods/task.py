@@ -90,5 +90,5 @@ def get_parameters(net):
 
 def set_parameters(net, parameters):
     params_dict = zip(net.state_dict().keys(), parameters)
-    state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+    state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
     net.load_state_dict(state_dict, strict=True)

@@ -108,7 +108,7 @@ class BaseClient(NumPyClient):
         ]
         params_dict = zip(model_keys, parameters)
 
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
 
         self.model_manager.model.set_parameters(state_dict)
 
@@ -231,7 +231,7 @@ class FedPerClient(BaseClient):
 
         params_dict = zip(model_keys, parameters)
 
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
 
         self.model_manager.model.set_parameters(state_dict)
 

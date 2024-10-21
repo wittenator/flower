@@ -170,7 +170,7 @@ class FjORDClient(
         :param parameters: The parameters of the model.
         """
         params_dict = zip(self.net.state_dict().keys(), parameters)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         self.net.load_state_dict(state_dict, strict=True)
 
     def fit(

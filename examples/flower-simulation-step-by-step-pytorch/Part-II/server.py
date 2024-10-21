@@ -29,7 +29,7 @@ def get_evalulate_fn(model_cfg: int, testloader):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         params_dict = zip(model.state_dict().keys(), parameters)
-        state_dict = OrderedDict({k: torch.Tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         model.load_state_dict(state_dict, strict=True)
 
         loss, accuracy = test(model, testloader, device)

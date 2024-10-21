@@ -11,6 +11,7 @@ import torch
 from flwr.common.typing import NDArrays
 from torch import nn
 from torch.optim.optimizer import Optimizer, required
+import numpy as np
 
 from fednova.utils import comp_accuracy
 
@@ -45,7 +46,7 @@ class VGG(nn.Module):
         return x
 
 
-def make_layers(network_cfg, batch_norm=False):
+def make_layers(network_cfg, batch_norm=True):
     """Define the layer configuration of the VGG-16 network."""
     layers = []
     in_channels = 3
@@ -179,7 +180,7 @@ def test(model, test_loader, device, *args) -> Tuple[float, Dict[str, float]]:
     if len(args) > 1:
         # load the model parameters
         params_dict = zip(model.state_dict().keys(), args[1])
-        state_dict = OrderedDict({k: torch.Tensor(v) for k, v in params_dict})
+        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         model.load_state_dict(state_dict)
 
     model = model.to(device)
@@ -357,6 +358,7 @@ class ProxSGD(Optimizer):  # pylint: disable=too-many-instance-attributes
                 param_state = self.state[p]
                 param_tensor = torch.tensor(init_params[i])
                 p.data.copy_(param_tensor)
+                
                 param_state["old_init"] = param_tensor
                 i += 1
 

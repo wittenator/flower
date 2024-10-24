@@ -1,109 +1,127 @@
 ---
-title: Federated Optimization in Heterogeneous Networks
-url: https://arxiv.org/abs/1812.06127
-labels: [image classification, cross-device, stragglers]
-dataset: [MNIST]
+title: title of the paper # TODO
+url: https://arxiv.org/abs/2007.14390 # TODO: update with the link to your paper
+labels: [label1, label2] # TODO: please add between 4 and 10 single-word (maybe two-words) labels (e.g. system heterogeneity, image classification, asynchronous, weight sharing, cross-silo). Do not use "". Remove this comment once you are done.
+dataset: [dataset1, dataset2] # TODO: list of datasets you include in your baseline. Do not use "". Remove this comment once you are done.
 ---
 
-# FedProx: Federated Optimization in Heterogeneous Networks
+> [!IMPORTANT]
+> This is the template for your `README.md`. Please fill-in the information in all areas with a :warning: symbol.
+> Please refer to the [Flower Baselines contribution](https://flower.ai/docs/baselines/how-to-contribute-baselines.html) and [Flower Baselines usage](https://flower.ai/docs/baselines/how-to-use-baselines.html) guides for more details.
+> Please complete the metadata section at the very top of this README. This generates a table at the top of the file that will facilitate indexing baselines.
+> Please remove this [!IMPORTANT] block once you are done with your `README.md` as well as all the `:warning:` symbols and the comments next to them.
 
-> Note: If you use this baseline in your work, please remember to cite the original authors of the paper as well as the Flower paper.
+> [!IMPORTANT]
+> To help having all baselines similarly formatted and structured, we have included two scripts in `baselines/dev` that when run will format your code and run some tests checking if it's formatted.
+> These checks use standard packages such as `isort`, `black`, `pylint` and others. You as a baseline creator will need to install additional pacakges. These are already specified in the `pyproject.toml` of 
+> your baseline. Follow these steps:
 
-**Paper:** [arxiv.org/abs/1812.06127](https://arxiv.org/abs/1812.06127)
+```bash
+# Create a python env
+pyenv virtualenv 3.10.14 fedprox
 
-**Authors:** Tian Li, Anit Kumar Sahu, Manzil Zaheer, Maziar Sanjabi, Ameet Talwalkar and Virginia Smith.
+# Activate it
+pyenv activate fedprox
 
-**Abstract:** Federated Learning is a distributed learning paradigm with two key challenges that differentiate it from traditional distributed optimization: (1) significant variability in terms of the systems characteristics on each device in the network (systems heterogeneity), and (2) non-identically distributed data across the network (statistical heterogeneity). In this work, we introduce a framework, FedProx, to tackle heterogeneity in federated networks. FedProx can be viewed as a generalization and re-parametrization of FedAvg, the current state-of-the-art method for federated learning. While this re-parameterization makes only minor modifications to the method itself, these modifications have important ramifications both in theory and in practice. Theoretically, we provide convergence guarantees for our framework when learning over data from non-identical distributions (statistical heterogeneity), and while adhering to device-level systems constraints by allowing each participating device to perform a variable amount of work (systems heterogeneity). Practically, we demonstrate that FedProx allows for more robust convergence than FedAvg across a suite of realistic federated datasets. In particular, in highly heterogeneous settings, FedProx demonstrates significantly more stable and accurate convergence behavior relative to FedAvg---improving absolute test accuracy by 22% on average.
+# Install project including developer packages
+# Note the `-e` this means you install it in editable mode 
+# so even if you change the code you don't need to do `pip install`
+# again. However, if you add a new dependency to `pyproject.toml` you
+# will need to re-run the command below
+pip install -e ".[dev]"
+
+# Even without modifying or adding new code, you can run your baseline
+# with the placeholder code generated when you did `flwr new`. If you
+# want to test this to familiarise yourself with how flower apps are
+# executed, execute this from the directory where you `pyproject.toml` is:
+flwr run .
+
+# At anypoint during the process of creating your baseline you can 
+# run the formatting script. For this do:
+cd .. # so you are in the `flower/baselines` directory
+
+# Run the formatting script (it will auto-correct issues if possible)
+./dev/format-baseline.sh fedprox
+
+# Then, if the above is all good, run the tests.
+./dev/test-baseline.sh fedprox
+```
+
+> [!IMPORTANT]
+> When you open a PR to get the baseline merged into the main Flower repository, the `./dev/test-baseline.sh` script will run. Only if test pass, the baseline can be merged. 
+> Some issues highlighted by the tests script are easier than others to fix. Do not hesitate in reaching out for help to us (e.g. as a comment in your PR) if you are stuck with these.
+> Before opening your PR, please remove the code snippet above as well all the [!IMPORTANT] message blocks. Yes, including this one.
+
+# :warning: *_Title of your baseline_* # Also copy this title to the `description` in the `[project]` section of your `pyproject.toml`.
+
+> [!NOTE] 
+> If you use this baseline in your work, please remember to cite the original authors of the paper as well as the Flower paper.
+
+**Paper:** :warning: *_add the URL of the paper page (not to the .pdf). For instance if you link a paper on ArXiv, add here the URL to the abstract page (e.g. [paper](https://arxiv.org/abs/1512.03385)). If your paper is in from a journal or conference proceedings, please follow the same logic._*
+
+**Authors:** :warning: *_list authors of the paper_*
+
+**Abstract:** :warning: *_add here the abstract of the paper you are implementing_*
 
 
 ## About this baseline
-**What's implemented:** The code in this directory replicates the experiments in *Federated Optimization in Heterogeneous Networks* (Li et al., 2018) for MNIST, which proposed the FedProx algorithm. Concretely, it replicates the results for MNIST in Figure 1 and 7.
 
-**Datasets:** MNIST from PyTorch's Torchvision
+**What’s implemented:** :warning: *_Concisely describe what experiment(s) (e.g. Figure 1, Table 2, etc) in the publication can be replicated by running the code. Please only use a few sentences. ”_*
 
-**Hardware Setup:** These experiments were run on a desktop machine with 24 CPU threads. Any machine with 4 CPU cores or more would be able to run it in a reasonable amount of time. Note: we install PyTorch with GPU support but by default, the entire experiment runs on CPU-only mode.
+**Datasets:** :warning: *_List the datasets you used (if you used a medium to large dataset, >10GB please also include the sizes of the dataset). We highly recommend using [FlowerDatasets](https://flower.ai/docs/datasets/index.html) to download and partition your dataset. If you have other ways to download the data, you can also use `FlowerDatasets` to partiion it._*
 
-**Contributors:** Charles Beauville and Javier Fernandez-Marques
+**Hardware Setup:** :warning: *_Give some details about the hardware (e.g. a server with 8x V100 32GB and 256GB of RAM) you used to run the experiments for this baseline. Indicate how long it took to run the experiments. Someone out there might not have access to the same resources you have so, could you list the absolute minimum hardware needed to run the experiment in a reasonable amount of time ? (e.g. minimum is 1x 16GB GPU otherwise a client model can’t be trained with a sufficiently large batch size). Could you test this works too?_*
+
+**Contributors:** :warning: *_let the world know who contributed to this baseline. This could be either your name, your name and affiliation at the time, or your GitHub profile name if you prefer. If multiple contributors signed up for this baseline, please list yourself and your colleagues_*
 
 
 ## Experimental Setup
 
-**Task:** Image classification
+**Task:** :warning: *_what’s the primary task that is being federated? (e.g. image classification, next-word prediction). If you have experiments for several, please list them_*
 
-**Model:** This directory implements two models:
-* A logistic regression model used in the FedProx paper for MNIST (see `models/LogisticRegression`). This is the model used by default.
-* A two-layer CNN network as used in the FedAvg paper (see `models/Net`)
+**Model:** :warning: *_provide details about the model you used in your experiments (if more than use a list). If your model is small, describing it as a table would be :100:. Some FL methods do not use an off-the-shelve model (e.g. ResNet18) instead they create your own. If this is your case, please provide a summary here and give pointers to where in the paper (e.g. Appendix B.4) is detailed._*
 
-**Dataset:** This baseline only includes the MNIST dataset. By default, it will be partitioned into 1000 clients following a pathological split where each client has examples of two (out of ten) class labels. The number of examples in each client is derived by sampling from a powerlaw distribution. The settings are as follows:
+**Dataset:** :warning: *_Earlier you listed already the datasets that your baseline uses. Now you should include a breakdown of the details about each of them. Please include information about: how the dataset is partitioned (e.g. LDA with alpha 0.1 as default and all clients have the same number of training examples; or each client gets assigned a different number of samples following a power-law distribution with each client only instances of 2 classes)? if  your dataset is naturally partitioned just state “naturally partitioned”; how many partitions there are (i.e. how many clients)? Please include this an all information relevant about the dataset and its partitioning into a table._*
 
-| Dataset | #classes | #partitions | partitioning method | partition settings |
-| :------ | :---: | :---: | :---: | :---: |
-| MNIST | 10 | 1000 | pathological with power law | 2 classes per client |
+**Training Hyperparameters:** :warning: *_Include a table with all the main hyperparameters in your baseline. Please show them with their default value._*
 
-**Training Hyperparameters:**
-The following table shows the main hyperparameters for this baseline with their default value (i.e. the value used if you run `python main.py` directly)
-
-| Description | Default Value |
-| ----------- | ----- |
-| total clients | 1000 |
-| clients per round | 10 |
-| number of rounds | 100 |
-| client resources | {'num_cpus': 2.0, 'num_gpus': 0.0 }|
-| data partition | pathological with power law (2 classes per client) |
-| optimizer | SGD with proximal term |
-| proximal mu | 1.0 |
-| stragglers_fraction | 0.9 |
 
 ## Environment Setup
 
-To construct the Python environment, simply run:
+:warning: _Specify the steps to create and activate your environment and install the baseline project. Most baselines are expected to require minimal steps as shown below. These instructions should be comprehensive enough so anyone can run them (if non standard, describe them step-by-step)._
+
+:warning: _The dependencies for your baseline are listed in the `pyproject.toml`, extend it with additional packages needed for your baseline._
+
+:warning: _Baselines should use Python 3.10, [pyenv](https://github.com/pyenv/pyenv), and the [virtualenv](https://github.com/pyenv/pyenv-virtualenv) plugging. 
 
 ```bash
-# Set directory to use python 3.10 (install with `pyenv install <version>` if you don't have it)
-pyenv local 3.10.12
+# Create the virtual environment
+pyenv virtualenv 3.10.14 <name-of-your-baseline-env>
 
-# Tell poetry to use python3.10
-poetry env use 3.10.12
+# Activate it
+pyenv activate <name-of-your-baseline-env>
 
-# Install
-poetry install
+# Install the baseline
+pip install -e .
 ```
+
+:warning: _If your baseline requires running some script before starting an experiment, please indicate so here_.
 
 ## Running the Experiments
 
-To run this FedProx with MNIST baseline, first ensure you have activated your Poetry environment (execute `poetry shell` from this directory), then:
+:warning: _Make sure you have adjusted the `client-resources` in the federation in `pyproject.toml` so your simulation makes the best use of the system resources available._
 
+:warning: _Your baseline implementation should replicate several of the experiments in the original paper. Please include here the exact command(s) needed to run each of those experiments followed by a figure (e.g. a line plot) or table showing the results you obtained when you ran the code. Below is an example of how you can present this. Please add command followed by results for all your experiments._
+
+:warning: _You might want to add more hyperparameters and settings for your baseline. You can do so by extending `[tool.flwr.app.config]` in `pyproject.toml`. In addition, you can create a new `.toml` file that can be passed with the `--run-config` command (see below an example) to override several config values **already present** in `pyproject.toml`._
 ```bash
-python -m fedprox.main # this will run using the default settings in the `conf/config.yaml`
+# it is likely that for one experiment you need to override some arguments.
+flwr run . --run-config learning-rate=0.1,coefficient=0.123
 
-# you can override settings directly from the command line
-python -m fedprox.main mu=1 num_rounds=200 # will set proximal mu to 1 and the number of rounds to 200
-
-# if you run this baseline with a larger model, you might want to use the GPU (not used by default).
-# you can enable this by overriding the `server_device` and `client_resources` config. For example
-# the below will run the server model on the GPU and 4 clients will be allowed to run concurrently on a GPU (assuming you also meet the CPU criteria for clients)
-python -m fedprox.main server_device=cuda client_resources.num_gpus=0.25
+# or you might want to load different `.toml` configs all together:
+flwr run . --run-config <my-big-experiment-config>.toml
 ```
 
-To run using FedAvg:
-```bash
-# this will use a variation of FedAvg that drops the clients that were flagged as stragglers
-# This is done so to match the experimental setup in the FedProx paper
-python -m fedprox.main --config-name fedavg
-
-# this config can also be overridden from the CLI
-```
-
-## Expected results
-
-With the following command, we run both FedProx and FedAvg configurations while iterating through different values of `mu` and `stragglers_fraction`. We ran each experiment five times (this is achieved by artificially adding an extra element to the config but it doesn't have an impact on the FL setting `'+repeat_num=range(5)'`)
-
-```bash
-python -m fedprox.main --multirun mu=0.0,2.0 stragglers_fraction=0.0,0.5,0.9 '+repeat_num=range(5)'
-# note that for FedAvg we don't want to change the proximal term mu since it should be kept at 0.0
-python -m fedprox.main --config-name fedavg --multirun stragglers_fraction=0.0,0.5,0.9 '+repeat_num=range(5)'
-```
-
-The above commands would generate results that you can plot and would look like the plot shown below. This plot was generated using the jupyter notebook in the `docs/` directory of this baseline after running the `--multirun` commands above.
-
-![](_static/FedProx_mnist.png)
+:warning: _It is preferable to show a single commmand (or multilple commands if they belong to the same experiment) and then a table/plot with the expected results, instead of showing all the commands first and then all the results/plots._
+:warning: _If you present plots or other figures, please include either a Jupyter notebook showing how to create them or include a utility function that can be called after the experiments finish running._
+:warning: If you include plots or figures, save them in `.png` format and place them in a new directory named `_static` at the same level as your `README.md`.

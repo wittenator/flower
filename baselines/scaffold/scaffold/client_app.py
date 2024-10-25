@@ -1,13 +1,15 @@
-"""fedprox: A Flower Baseline."""
+"""scaffold: A Flower Baseline."""
 
 import json
+from logging import log
 import torch
+import numpy as np
 
 from flwr.client import ClientApp, NumPyClient
 from flwr.common import Context
-from fedprox.dataset import load_data
-from fedprox.model import get_weights, set_weights, test, train
-from fedprox.utils import class_from_string, instantiate_model_from_string
+from scaffold.dataset import load_data
+from scaffold.model import get_weights, set_weights, test, train
+from scaffold.utils import class_from_string, instantiate_model_from_string, marshal_numpy, unmarshal_numpy
 
 
 class FlowerClient(NumPyClient):
@@ -22,10 +24,12 @@ class FlowerClient(NumPyClient):
         self.optimizer_kwargs = optimizer_kwargs
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.net.to(self.device)
+        self.local_control = np.array([0.0]*len(self.net.state_dict()))
 
     def fit(self, parameters, config):
         """Train model using this client's data."""
         set_weights(self.net, parameters)
+        global_control = unmarshal_numpy(config["global_control"])
         train_loss = train(
             net=self.net,
             trainloader=self.trainloader,
@@ -33,12 +37,33 @@ class FlowerClient(NumPyClient):
             device=self.device,
             optimizer_class=self.optimizer_class,
             optimizer_kwargs=self.optimizer_kwargs,
-            proximal_mu=config["proximal_mu"],
+            global_control=global_control,
+            local_control=self.local_control,
         )
+        # update local control
+        with torch.no_grad():
+            y_delta = []
+            c_plus = []
+            c_delta = []
+
+            model_params = self.net.state_dict()
+            for key in parameters.keys():
+                x, y_i = parameters[key], model_params[key]
+                y_delta.append((y_i.cpu() - x).numpy())
+
+            coef = 1 / (self.local_epochs * self.optimizer_kwargs["lr"])
+            for c, c_i, y_del in zip(global_control, self.control_local, y_delta):
+                c_plus.append(c_i - c - coef * y_del)
+
+            for c_p, c_l in zip(c_plus, self.c_local):
+                self.c_delta.append((c_p - c_l).tolist())
+
+            self.local_control = c_plus
+        log.info(f"LFinished training with loss {train_loss}")
         return (
             get_weights(self.net),
             len(self.trainloader.dataset),
-            {"train_loss": train_loss},
+            {"train_loss": train_loss, "c_delta": marshal_numpy(np.array(c_delta)) , "y_delta": marshal_numpy(np.array(y_delta))},
         )
 
     def evaluate(self, parameters, config):

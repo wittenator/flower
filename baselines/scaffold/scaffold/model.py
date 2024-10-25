@@ -1,23 +1,33 @@
-"""fedprox: A Flower Baseline."""
+"""scaffold: A Flower Baseline."""
 
 from collections import OrderedDict
-import copy
 
 import torch
-import torch.nn.functional as F
-from torch import nn
 import numpy as np
 
 
-def train(net, trainloader, epochs, device, proximal_mu, optimizer_class=torch.optim.SGD , optimizer_kwargs = {"lr": 0.1, "momentum": 0.9}):
-    """Train the model on the training set."""
+def train(net, trainloader, epochs, device, global_control, local_control, optimizer_class=torch.optim.SGD , optimizer_kwargs = {"lr": 0.1, "momentum": 0.9}):
+    """Train the model on the training set.
+
+    Args:
+        net (torch.nn.Module): The neural network model.
+        trainloader (torch.utils.data.DataLoader): The data loader for the training set.
+        epochs (int): The number of epochs to train the model.
+        device (torch.device): The device to use for training (e.g. "cuda" for GPU or "cpu" for CPU).
+        control_global (list): The global control parameters.
+        control_local (list): The local control parameters.
+        optimizer_class (torch.optim.Optimizer, optional): The optimizer class to use for training. Defaults to torch.optim.SGD.
+        optimizer_kwargs (dict, optional): Additional keyword arguments to pass to the optimizer class. Defaults to {"lr": 0.1, "momentum": 0.9}.
+
+    Returns:
+        float: The average training loss.
+    """
     net.to(device)  # move model to GPU if available
     criterion = torch.nn.CrossEntropyLoss()
     criterion.to(device)
     optimizer = optimizer_class(net.parameters(), **optimizer_kwargs)
     net.train()
     running_loss = 0.0
-    global_params = copy.deepcopy(net).parameters()
     for _ in range(epochs):
         for batch in trainloader:
             images = batch["img"]
@@ -26,11 +36,13 @@ def train(net, trainloader, epochs, device, proximal_mu, optimizer_class=torch.o
                 # Skip batches with a single image
                 continue
             optimizer.zero_grad()
-            proximal_term = 0.0
-            for local_weights, global_weights in zip(net.parameters(), global_params):
-                proximal_term += torch.square((local_weights - global_weights).norm(2))
-            loss = criterion(net(images.to(device)), labels.to(device)) + (proximal_mu / 2) * proximal_term
+            loss = criterion(net(images.to(device)), labels.to(device))
             loss.backward()
+            for param, c, c_i in zip(
+                net.parameters(), global_control, local_control
+            ):
+                if param.requires_grad:
+                    param.grad.data += torch.tensor(c - c_i).to(device)
             optimizer.step()
             running_loss += loss.item()
 

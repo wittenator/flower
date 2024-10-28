@@ -38,11 +38,15 @@ def train(net, trainloader, epochs, device, global_control, local_control, optim
             optimizer.zero_grad()
             loss = criterion(net(images.to(device)), labels.to(device))
             loss.backward()
-            for param, c, c_i in zip(
-                net.parameters(), global_control, local_control
+            for (name,param), c, c_i in zip(
+                net.state_dict().items(), global_control, local_control
             ):
                 if param.requires_grad:
-                    param.grad.data += torch.tensor(c - c_i).to(device)
+                    # The global control does not have batchnorm dimensions at the beginning, but is zero at this point in time
+                    if c.shape == c_i.shape:
+                        param.grad.data += torch.tensor(c - c_i).to(device)
+                    else:
+                        param.grad.data += torch.tensor(-c_i).to(device)
             optimizer.step()
             running_loss += loss.item()
 

@@ -28,14 +28,11 @@ def seed_all(seed: int) -> None:
     torch.backends.cudnn.benchmark = False
 
 def marshal_numpy(data: np.ndarray) -> bytes:
-    print("marshal_numpy")
     np_bytes = BytesIO()
-    np.save(np_bytes, data, allow_pickle=True)
+    np.savez(np_bytes, *data)
     return np_bytes.getvalue()
 
 def unmarshal_numpy(data: bytes) -> np.ndarray:
-    print("unmarshal_numpy")
     np_bytes = BytesIO(data)
-    array = np.load(np_bytes, allow_pickle=True)
-    print("unmarshal_numpy done")
+    array = np.load(np_bytes).values()
     return array

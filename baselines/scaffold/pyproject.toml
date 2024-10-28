@@ -133,17 +133,18 @@ seed = 42
 model.class = "torchvision.models.resnet18"
 dataset.name = "cifar10"
 dataset.partitioner = "flwr_datasets.partitioner.DirichletPartitioner"
-dataset.partitioner_kwargs = '{"alpha": 100.0, "partition_by": "label"}'
+dataset.partitioner_kwargs = '{"alpha": 0.1, "partition_by": "label"}'
 dataset.num_classes = 10
 optimizer.class = "torch.optim.SGD"
-optimizer.lr = 0.1
+optimizer.lr = 0.01
 optimizer.momentum = 0.9
 optimizer.weight_decay = 0.0001
+scaffold.global_lr = 0.1
 
 [tool.flwr.federations]
 default = "local-simulation"
 
 [tool.flwr.federations.local-simulation]
 options.num-supernodes = 10
-options.backend.client-resources.num-cpus = 2
-options.backend.client-resources.num-gpus = 0.0
+options.backend.client-resources.num-cpus = 4
+options.backend.client-resources.num-gpus = 0.2

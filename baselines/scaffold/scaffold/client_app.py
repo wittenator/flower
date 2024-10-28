@@ -1,7 +1,9 @@
 """scaffold: A Flower Baseline."""
 
+from collections import OrderedDict
 import json
 from logging import log
+from flwr.common.parameter import parameters_to_ndarrays
 import torch
 import numpy as np
 
@@ -24,7 +26,7 @@ class FlowerClient(NumPyClient):
         self.optimizer_kwargs = optimizer_kwargs
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.net.to(self.device)
-        self.local_control = np.array([0.0]*len(self.net.state_dict()))
+        self.local_control = [np.zeros_like(p.cpu().detach().numpy()) for k, p in net.state_dict().items()]
 
     def fit(self, parameters, config):
         """Train model using this client's data."""
@@ -46,24 +48,21 @@ class FlowerClient(NumPyClient):
             c_plus = []
             c_delta = []
 
-            model_params = self.net.state_dict()
-            for key in parameters.keys():
-                x, y_i = parameters[key], model_params[key]
+            for x, y_i in zip(parameters, self.net.state_dict().values()):
                 y_delta.append((y_i.cpu() - x).numpy())
 
             coef = 1 / (self.local_epochs * self.optimizer_kwargs["lr"])
-            for c, c_i, y_del in zip(global_control, self.control_local, y_delta):
+            for c, c_i, y_del in zip(global_control, self.local_control, y_delta):
                 c_plus.append(c_i - c - coef * y_del)
 
-            for c_p, c_l in zip(c_plus, self.c_local):
-                self.c_delta.append((c_p - c_l).tolist())
+            for c_p, c_l in zip(c_plus, self.local_control):
+                c_delta.append(c_p - c_l)
 
             self.local_control = c_plus
-        log.info(f"LFinished training with loss {train_loss}")
         return (
             get_weights(self.net),
             len(self.trainloader.dataset),
-            {"train_loss": train_loss, "c_delta": marshal_numpy(np.array(c_delta)) , "y_delta": marshal_numpy(np.array(y_delta))},
+            {"train_loss": train_loss, "c_delta": marshal_numpy(c_delta) , "y_delta": marshal_numpy(y_delta)},
         )
 
     def evaluate(self, parameters, config):

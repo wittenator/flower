@@ -98,6 +98,7 @@ def server_fn(context: Context):
     # Define strategy
     strategy = SCAFFOLD(
         global_lr=float(context.run_config["scaffold.global_lr"]),
+        total_num_clients=context.run_config["num-clients"],
         fraction_fit=float(fraction_fit),
         fraction_evaluate=1.0,
         min_available_clients=2,

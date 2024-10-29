@@ -15,10 +15,11 @@ from scaffold.utils import marshal_numpy, unmarshal_numpy
 
 class SCAFFOLD(FedAvg):
 
-    def __init__(self, initial_parameters: Parameters, global_lr: float = 1.0, **kwargs):
+    def __init__(self, initial_parameters: Parameters, total_num_clients: int, global_lr: float = 1.0, **kwargs):
         super().__init__(initial_parameters=initial_parameters, **kwargs)
         self.global_lr = global_lr
         self.last_parameters = initial_parameters
+        self.total_num_clients = total_num_clients
         self.global_control = [np.zeros_like(p) for p in parameters_to_ndarrays(initial_parameters)]
 
     def aggregate_fit(
@@ -47,7 +48,7 @@ class SCAFFOLD(FedAvg):
             for *layer_updates, global_weight in zip(*y_delta_results, parameters_to_ndarrays(self.last_parameters))
         ]
 
-        aggregated_control = [reduce(np.add, c_delta) / num_clients for c_delta in zip(*c_delta_results)]
+        aggregated_control = [(float(num_clients)/self.total_num_clients) * reduce(np.add, c_delta) / num_clients for c_delta in zip(*c_delta_results)]
 
         parameters_aggregated = ndarrays_to_parameters(aggregated_ndarrays)
         self.last_parameters = parameters_aggregated
